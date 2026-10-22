@@ -1,3 +1,5 @@
+import { log } from "./utils";
+
 /**
  * This preload module is injected into all well known steam urls.
  * - Store
@@ -19,8 +21,8 @@
  */
 export default async function main() {
   // TODO: ensure DOM and/or window are available
-  console.info("[ai-disclosure-shortcut] main called", window.location.href);
-  console.info("[ai-disclosure-shortcut] isStoreAppPage(): ", isStoreAppPage());
+  log("main called", window.location.href);
+  log("isStoreAppPage(): ", isStoreAppPage());
 }
 
 const storeHost = "store.steampowered.com";
@@ -31,5 +33,35 @@ function isStoreAppPage(): boolean {
 }
 
 function registerEventHandlers() {
-  
+  addEventListener("popstate", () => {
+    log();
+  });
+
+  addEventListener("hashChange", () => {
+    log();
+  });
+
+  if (window.navigation) {
+    navigation.addEventListener("navigate", (e) => {
+      log();
+    })
+  }
+
+  wrapStateMethods();
+}
+
+function wrapStateMethods() {
+  const origPushState = history.pushState;
+  history.pushState = function (...args) {
+    const applyResult = Reflect.apply(origPushState, this, args);
+    log('pushState called. New URL: ', location.href);
+    return applyResult;
+  }
+
+  const origReplaceState = history.replaceState;
+  history.replaceState = function (...args) {
+    const applyResult = Reflect.apply(origReplaceState, this, args);
+    log('replaceState called. New URL: ', location.href);
+    return applyResult;
+  }
 }
