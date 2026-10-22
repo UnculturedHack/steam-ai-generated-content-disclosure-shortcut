@@ -18,14 +18,14 @@ resources=["resources/**/*"]
 # [preload]
 # entry = "preload.lua"
 
-[backend]
-entry = "backend/main.lua"
-sources = ["backend/**/*.lua"]
+# [backend]
+# entry = "backend/main.lua"
+# sources = ["backend/**/*.lua"]
 
-[frontend]
-entry = "frontend/index.tsx"
+# [frontend]
+# entry = "frontend/index.tsx"
 
-[frontend.globals]
+# [frontend.globals]
 # Hook imports/refernces at compile time
 
 # ex:

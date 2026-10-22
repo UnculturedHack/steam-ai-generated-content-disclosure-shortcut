@@ -18,11 +18,18 @@
  * The frontend and backend will be loaded.
  */
 export default async function main() {
-  console.log("Attached to:", window.location.href);
+  // TODO: ensure DOM and/or window are available
+  console.info("[ai-disclosure-shortcut] main called", window.location.href);
+  console.info("[ai-disclosure-shortcut] isStoreAppPage(): ", isStoreAppPage());
+}
 
-  const sum = await backend.add(100, 100, 100);
-  console.log("Result from add:", sum);
+const storeHost = "store.steampowered.com";
+const storeAppPath = /^\/(?:agecheck\/)?app\/\d+(?:\/[^/]+)?\/?$/;
 
-  const result = await frontend.subtract(200, 100);
-  console.log("Result from subtract:", result.difference);
+function isStoreAppPage(): boolean {
+  return window.location.hostname === storeHost && storeAppPath.test(window.location.pathname);
+}
+
+function registerEventHandlers() {
+  
 }
