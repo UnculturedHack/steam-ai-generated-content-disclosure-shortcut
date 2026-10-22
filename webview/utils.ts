@@ -1,4 +1,4 @@
 
 export function log(...args: any[]) {
-  	console.log('[AI-Disclosures-Shortcut]', ...args);
+  	window.console.log('[AI-Disclosures-Shortcut]', ...args);
 }

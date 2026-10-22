@@ -1,32 +1,9 @@
 [plugin]
-id = "com.example.boilerplate"
-name = "Boilerplate Plugin"
+id = "gen.ai.disclosure.shortcut"
+name = "Generative AI Disclosure Shortcut"
 version = "1.0.0"
-author = "Millennium"
-description = "A template plugin for Millennium."
-
-[assets]
-# reference resources to be included inside the plugin at compile time
-resources=["resources/**/*"]
-
-# THE BELOW IS NOT YET IMPLEMENTED IN MILLENNIUM
-# --------------------
-# A simple script that returns a tuple [boolean: ok, string: error].
-# ok = plugin is usable on the current platform/environment
-# error = the error message if !ok
-# ex: jit.os == "Windows"
-# [preload]
-# entry = "preload.lua"
-
-# [backend]
-# entry = "backend/main.lua"
-# sources = ["backend/**/*.lua"]
-
-# [frontend]
-# entry = "frontend/index.tsx"
-
-# [frontend.globals]
-# Hook imports/refernces at compile time
+author = "mdadamson"
+description = "TODO"
 
 # ex:
 # "react" = "window.SOME_FAKE_REACT"
@@ -38,9 +15,6 @@ resources=["resources/**/*"]
 [webkit]
 entry = "webview/preload.ts"
 
-# [webkit.globals]
-# same as frontend.globals
-
 [compiler]
 # output path
 # auto = automatically detect Millennium installation and install plugin
@@ -48,7 +22,7 @@ entry = "webview/preload.ts"
 output_path = "auto"
 
 [dev]
-# plugin_name = "com.example.boilerplate"     # defaults to [plugin].id
+# plugin_name = "gen.ai.disclosure.shortcut"     # defaults to [plugin].id
 # socket = "/tmp/millennium-mep.sock"         # defaults to platform MEP path
 
 # Restart the plugin backend on any source change (default: true).

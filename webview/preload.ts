@@ -19,13 +19,20 @@ import { log } from "./utils";
  *
  * The frontend and backend will be loaded.
  */
+window.console.warn("!!!!!!!!!!!!!!!!preload.ts script loaded");
+
+
 export default async function main() {
-
   // TODO: check that DOM and/or window are available
-
+  window.console.warn("___________preload.ts script loaded");
+  window.console.warn("main called", window.location.href);
   log("main called", window.location.href);
   registerEventHandlers();
 }
+
+//function log(...args: any[]) { console.log(args); }
+
+window.console.warn("preload.ts script loaded");
 
 const STORE_HOST_NAME = "store.steampowered.com";
 const STORE_APP_PATH_REGEX = /^\/(?:agecheck\/)?app\/\d+(?:\/[^/]+)?\/?$/;
@@ -101,7 +108,7 @@ function currentPageNeedsShortcut(): boolean {
 }
 
 function currentUrlChanged(): boolean {
-  let urlChanged = currentUrl == location.href;
+  let urlChanged = currentUrl != location.href;
   log("currentUrlChanged: ", urlChanged);
   return urlChanged;
 }
