@@ -43,6 +43,9 @@ const DISCLOSURE_ROOT_SELECTOR = "#game_area_content_descriptors";
 const DISCLOSURE_HEADER_TEXT = "AI Generated Content Disclosure";
 const SHORTCUT_ID = "ai-content-disclosure-shortcut";
 const SHORTCUT_SELECTOR = `#${SHORTCUT_ID}`;
+const SHORTCUT_ROOT_SELECTOR = "#glanceMidCtn";
+//const ANCHOR_ELEMENT_SELECTOR = "#glanceCtnResponsiveRight";
+const ANCHOR_ELEMENT_SELECTOR = ".glance_ctn_responsive_left";
 
 function isStoreAppPage(): boolean {
   const isStorePage = window.location.hostname === STORE_HOST_NAME && 
@@ -113,7 +116,29 @@ function handleUrlChange() {
 function addShortcutToPage() {
   //TODO: actually add button/label shortcut\
   // - tooltip? shortcut icon/image?
-  log("shortcut added (not really yet) to page!");
+
+  let container = document.createElement("div");
+  container.id = SHORTCUT_ID;
+  let textSpan = document.createElement("span");
+  textSpan.style.color = "#66C0F4";
+  textSpan.style.fontSize = "14px";
+  textSpan.textContent = DISCLOSURE_HEADER_TEXT;
+  container.appendChild(textSpan);
+
+  let shortcutRoot = document.querySelector(SHORTCUT_ROOT_SELECTOR);
+  if (!shortcutRoot) {
+    log("Failed to find element with id: ", SHORTCUT_ROOT_SELECTOR, ". Shortcut will not be added.");
+    return;
+  }
+
+  let anchor = shortcutRoot.querySelector(ANCHOR_ELEMENT_SELECTOR);
+  if (anchor) {
+    shortcutRoot.insertBefore(container, anchor);
+    log("shortcut added to page!");
+  }
+  else {
+    log("Failed to locate anchor element. Shortcut not added.")
+  }
 }
 
 function pageHasAiContentDisclosure(): boolean {
