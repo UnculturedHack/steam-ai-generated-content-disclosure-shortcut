@@ -1,16 +1,9 @@
 [plugin]
-id = "gen.ai.disclosure.shortcut"
-name = "Generative AI Disclosure Shortcut"
+id = "ai.generated.content.disclosure.shortcut"
+name = "AI Generated Content Disclosure Shortcut"
 version = "1.0.0"
 author = "mdadamson"
 description = "TODO"
-
-# ex:
-# "react" = "window.SOME_FAKE_REACT"
-
-# All imports to "react" get hooked and replaced with window.SOME_FAKE_REACT.
-# import { useEffect } from "react";
-# useEffect() -> window.SOME_FAKE_REACT.useEffect() at runtime
 
 [webkit]
 entry = "webview/preload.ts"
@@ -22,7 +15,7 @@ entry = "webview/preload.ts"
 output_path = "auto"
 
 [dev]
-# plugin_name = "gen.ai.disclosure.shortcut"     # defaults to [plugin].id
+# plugin_name = "ai.generated.content.disclosure.shortcut"     # defaults to [plugin].id
 # socket = "/tmp/millennium-mep.sock"         # defaults to platform MEP path
 
 # Restart the plugin backend on any source change (default: true).
