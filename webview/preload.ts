@@ -1,5 +1,3 @@
-import { log } from "./utils";
-
 /**
  * This preload module is injected into all well known steam urls.
  * - Store
@@ -21,31 +19,27 @@ import { log } from "./utils";
  */
 export default async function main() {
   if (document.readyState === "complete") {
-    log("page already loaded - handling setup.")
     handlePageLoad();
   }
   else {
-    log("page not loaded yet - add event listener for load event. document.readyState: ", document.readyState);
     window.addEventListener("load", () => {
-      log("window: load event fired.")
       handlePageLoad();
     });
   }
 }
 
-// Games with "AI Generated Content Disclosure":
-// - Zombie Car Kaiju Killer (and demo)
-// - SLAM TANK
-
 const STORE_HOST_NAME = "store.steampowered.com";
 const STORE_APP_PATH_REGEX = /^\/(?:agecheck\/)?app\/\d+(?:\/[^/]+)?\/?$/;
-const DISCLOSURE_ROOT_SELECTOR = "#game_area_content_descriptors";
+
+const DISCLOSURE_ROOT_ID = "game_area_content_descriptors";
 const DISCLOSURE_HEADER_TEXT = "AI Generated Content Disclosure";
-const SHORTCUT_ID = "ai-content-disclosure-shortcut";
-const SHORTCUT_SELECTOR = `#${SHORTCUT_ID}`;
-const SHORTCUT_ROOT_SELECTOR = "#glanceMidCtn";
-//const ANCHOR_ELEMENT_SELECTOR = "#glanceCtnResponsiveRight";
-const ANCHOR_ELEMENT_SELECTOR = ".glance_ctn_responsive_left";
+const DISCLOSURE_HEADER_ID = "aiContDisclosureHeader";
+let disclosureHeaderIdHref: string | null = null;
+
+const SHORTCUT_LINK_ID = "aiDisclosureSc";
+const SHORTCUT_PARENT_SELECTOR = ".glance_ctn_responsive_left";
+
+const TOOLTIP_TEXT = "This app has an AI Generated Content Disclosure. Click to see it.";
 
 function isStoreAppPage(): boolean {
   const isStorePage = window.location.hostname === STORE_HOST_NAME && 
@@ -56,102 +50,66 @@ function isStoreAppPage(): boolean {
   return isStorePage;
 }
 
-let pageLoaded = false;
-
-function registerEventHandlers() {
-
-  addEventListener("popstate", () => {
-    log("popState event fired.");
-    handleUrlChange();
-  });
-
-  addEventListener("hashchange", () => {
-    log("hashchange event fired.");
-    handleUrlChange();
-  });
-
-  if (window.navigation) {
-    navigation.addEventListener("navigate", (e) => {
-      log("navigate event fired. navigationType: ", e.navigationType);
-      
-      //handlePageEvent();
-    });
+function handleHashChangeEvent() {
+  if (window.location.href.endsWith(DISCLOSURE_HEADER_ID)) {
+    // scroll down slightly to avoid navbar overlap
+    window.scrollBy(0, -50);
   }
 
-  wrapStateMethods();
+  addShortcutIfDne();
 }
 
-function wrapStateMethods() {
-  const origPushState = history.pushState;
-  history.pushState = function (...args) {
-    const applyResult = Reflect.apply(origPushState, this, args);
-    log("pushState called.");
-    handleUrlChange();
-    return applyResult;
+function addShortcutIfDne() {
+  if (shortcutAlreadyExists()) {
+    log("The current page already has a shortcut. Shortcut not added.");
+    return;
   }
-
-  const origReplaceState = history.replaceState;
-  history.replaceState = function (...args) {
-    const applyResult = Reflect.apply(origReplaceState, this, args);
-    log("replaceState called.");
-    handleUrlChange();
-    return applyResult;
+  
+  if (!disclosureHeaderIdHref) {
+    log("disclosureHeaderIdHref was null. Shortcut not added.");
+    return;
   }
-}
+  
+  const shortcut = document.createElement("a");
+  shortcut.href = disclosureHeaderIdHref;
+  shortcut.id = SHORTCUT_LINK_ID;
+  shortcut.dataset.tooltipHtml = TOOLTIP_TEXT;
+  shortcut.textContent = DISCLOSURE_HEADER_TEXT;
 
-function handleUrlChange() {
-  if (!pageLoaded) {
-    log("handleUrlChange called but the window hasn't finished loading! Returning...");
+  const ctn = document.createElement("div");
+  ctn.style.display = "flex";
+  ctn.style.paddingTop = "20px";
+  ctn.appendChild(shortcut);
+
+  const shortcutParent = document.querySelector(SHORTCUT_PARENT_SELECTOR);
+  if (!shortcutParent) {
+    log("Failed to find element with id: ", SHORTCUT_PARENT_SELECTOR, ". Shortcut not added.");
     return;
   }
 
-  if (!pageAlreadyHasShortcut()) {
-    addShortcutToPage();
-  }
-  else {
-    log("The current page already has a shortcut. Ignoring.");
-  }
-}
-
-function addShortcutToPage() {
-  //TODO: actually add button/label shortcut\
-  // - tooltip? shortcut icon/image?
-
-  let container = document.createElement("div");
-  container.id = SHORTCUT_ID;
-  let textSpan = document.createElement("span");
-  textSpan.style.color = "#66C0F4";
-  textSpan.style.fontSize = "14px";
-  textSpan.textContent = DISCLOSURE_HEADER_TEXT;
-  container.appendChild(textSpan);
-
-  let shortcutRoot = document.querySelector(SHORTCUT_ROOT_SELECTOR);
-  if (!shortcutRoot) {
-    log("Failed to find element with id: ", SHORTCUT_ROOT_SELECTOR, ". Shortcut will not be added.");
-    return;
-  }
-
-  let anchor = shortcutRoot.querySelector(ANCHOR_ELEMENT_SELECTOR);
-  if (anchor) {
-    shortcutRoot.insertBefore(container, anchor);
-    log("shortcut added to page!");
-  }
-  else {
-    log("Failed to locate anchor element. Shortcut not added.")
-  }
+  shortcutParent.appendChild(ctn);
+  log("shortcut added to page!");
 }
 
 function pageHasAiContentDisclosure(): boolean {
-  const disclosureRoot = document.querySelector(DISCLOSURE_ROOT_SELECTOR);
+  const disclosureRoot = document.getElementById(DISCLOSURE_ROOT_ID);
   if (!disclosureRoot) {
-    log("element with id ", DISCLOSURE_ROOT_SELECTOR, " was not found. AI Content Disclosure not found.");
+    log("element with id ", DISCLOSURE_ROOT_ID, " was not found. AI Content Disclosure not found.");
     return false;
   }
 
   const foundHeaders = disclosureRoot.querySelectorAll('h2');
   for (let header of foundHeaders) {
-    if (header.textContent == DISCLOSURE_HEADER_TEXT)
+    if (header.textContent?.trim() === DISCLOSURE_HEADER_TEXT)
     {
+      if (header.id) {
+        disclosureHeaderIdHref = `#${header.id}`;
+      }
+      else {
+        header.id = DISCLOSURE_HEADER_ID;
+        disclosureHeaderIdHref = `#${DISCLOSURE_HEADER_ID}`;
+      }
+
       log(`${DISCLOSURE_HEADER_TEXT} found.`);
       return true;
     }
@@ -160,14 +118,17 @@ function pageHasAiContentDisclosure(): boolean {
   return false;
 }
 
-function pageAlreadyHasShortcut(): boolean {
-  return document.querySelector(SHORTCUT_SELECTOR) != null;
+function shortcutAlreadyExists(): boolean {
+  return document.getElementById(SHORTCUT_LINK_ID) != null;
 }
 
 function handlePageLoad() {
-  pageLoaded = true;
   if (isStoreAppPage() && pageHasAiContentDisclosure()){
-    handleUrlChange();
-    registerEventHandlers();
+    addShortcutIfDne();
+    addEventListener("hashchange", handleHashChangeEvent);
   }
+}
+
+function log(...args: any[]) {
+  	window.console.log('[AI-Disclosures-Shortcut]', ...args);
 }
