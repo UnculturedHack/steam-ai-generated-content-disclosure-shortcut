@@ -2,8 +2,8 @@
 id = "ai.generated.content.disclosure.shortcut"
 name = "AI Generated Content Disclosure Shortcut"
 version = "1.0.0"
-author = "mdadamson"
-description = "TODO"
+author = "UnculturedHack"
+description = "Makes it easier to see which Steam store app pages contain an AI Generated Content Disclosure by adding a link to the app's main panel at the top of the page."
 
 [webkit]
 entry = "webview/preload.ts"
