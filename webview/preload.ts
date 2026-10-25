@@ -18,11 +18,11 @@
  * The frontend and backend will be loaded.
  */
 export default async function main() {
-  if (document.readyState === "complete") {
+  if (document.readyState === "complete" || document.readyState === "interactive") {
     handlePageLoad();
   }
   else {
-    window.addEventListener("load", () => {
+    document.addEventListener("DOMContentLoaded", () => {
       handlePageLoad();
     });
   }
@@ -31,7 +31,7 @@ export default async function main() {
 const STORE_HOST_NAME = "store.steampowered.com";
 const STORE_APP_PATH_REGEX = /^\/(?:agecheck\/)?app\/\d+(?:\/[^/]+)?\/?$/;
 
-const DISCLOSURE_ROOT_ID = "game_area_content_descriptors";
+const APP_DESCRIPTION_COLUMN_SELECTOR = ".leftcol.game_description_column";
 const DISCLOSURE_HEADER_TEXT = "AI Generated Content Disclosure";
 const DISCLOSURE_HEADER_ID = "aiContDisclosureHeader";
 let disclosureHeaderIdHref: string | null = null;
@@ -92,14 +92,23 @@ function addShortcutIfDne() {
 }
 
 function pageHasAiContentDisclosure(): boolean {
-  const disclosureRoot = document.getElementById(DISCLOSURE_ROOT_ID);
-  if (!disclosureRoot) {
-    log("element with id ", DISCLOSURE_ROOT_ID, " was not found. AI Content Disclosure not found.");
+  // const disclosureRoot = document.getElementById(DISCLOSURE_ROOT_ID);
+  // if (!disclosureRoot) {
+  //   log("element with id ", DISCLOSURE_ROOT_ID, " was not found. AI Content Disclosure not found.");
+  //   return false;
+  // }
+
+  const appDescrCol = document.querySelector(APP_DESCRIPTION_COLUMN_SELECTOR);
+  if (!appDescrCol) {
+    log(`element with selector ${APP_DESCRIPTION_COLUMN_SELECTOR} was not found. ${DISCLOSURE_HEADER_TEXT} not found.`);
     return false;
   }
 
-  const foundHeaders = disclosureRoot.querySelectorAll('h2');
+  //const foundHeaders = disclosureRoot.querySelectorAll('h2');
+  const foundHeaders = appDescrCol.querySelectorAll('h2');
+  log("foundHeaders count: ", foundHeaders.length)
   for (let header of foundHeaders) {
+    log("header.textContent?.trim(): ", header.textContent?.trim());
     if (header.textContent?.trim() === DISCLOSURE_HEADER_TEXT)
     {
       if (header.id) {
