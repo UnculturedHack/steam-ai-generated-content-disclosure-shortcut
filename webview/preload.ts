@@ -18,7 +18,7 @@
  * The frontend and backend will be loaded.
  */
 export default async function main() {
-  if (document.readyState === "complete" || document.readyState === "interactive") {
+  if (document.readyState != "loading") {
     handlePageLoad();
   }
   else {
@@ -83,7 +83,7 @@ function addShortcutIfDne() {
 
   const shortcutParent = document.querySelector(SHORTCUT_PARENT_SELECTOR);
   if (!shortcutParent) {
-    log("Failed to find element with id: ", SHORTCUT_PARENT_SELECTOR, ". Shortcut not added.");
+    log("Failed to find element with class: ", SHORTCUT_PARENT_SELECTOR, ". Shortcut not added.");
     return;
   }
 
@@ -92,23 +92,14 @@ function addShortcutIfDne() {
 }
 
 function pageHasAiContentDisclosure(): boolean {
-  // const disclosureRoot = document.getElementById(DISCLOSURE_ROOT_ID);
-  // if (!disclosureRoot) {
-  //   log("element with id ", DISCLOSURE_ROOT_ID, " was not found. AI Content Disclosure not found.");
-  //   return false;
-  // }
-
   const appDescrCol = document.querySelector(APP_DESCRIPTION_COLUMN_SELECTOR);
   if (!appDescrCol) {
     log(`element with selector ${APP_DESCRIPTION_COLUMN_SELECTOR} was not found. ${DISCLOSURE_HEADER_TEXT} not found.`);
     return false;
   }
 
-  //const foundHeaders = disclosureRoot.querySelectorAll('h2');
   const foundHeaders = appDescrCol.querySelectorAll('h2');
-  log("foundHeaders count: ", foundHeaders.length)
   for (let header of foundHeaders) {
-    log("header.textContent?.trim(): ", header.textContent?.trim());
     if (header.textContent?.trim() === DISCLOSURE_HEADER_TEXT)
     {
       if (header.id) {
@@ -139,5 +130,5 @@ function handlePageLoad() {
 }
 
 function log(...args: any[]) {
-  	window.console.log('[AI-Disclosures-Shortcut]', ...args);
+  window.console.log('[AI-Disclosures-Shortcut]', ...args);
 }
